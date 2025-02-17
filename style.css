@@ -124,7 +124,7 @@
     }
     
     .podStop-button {
-        background-color: '#FFA500';
+        background-color: rgb(255, 165, 0);
         color: white;
         border: none;
         border-radius: 8px;
