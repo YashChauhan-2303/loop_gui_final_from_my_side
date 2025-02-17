@@ -152,11 +152,23 @@ async function activateEmergencyBrakes() {
             await writer.write("EMERGENCY_BRAKE\n");
             console.log("Emergency brakes activated due to critical temperature");
             
-            // Trigger emergency brake button visual feedback
-            const emergencyButton = document.getElementById('emergencyBrake');
-            if (emergencyButton) {
-                emergencyButton.style.backgroundColor = '#ff0000';
+            // Get pod stop button and handle everything related to it
+            const podStop = document.getElementById('podStop');
+            if (podStop) {
+                // Change button color to red
+                podStop.style.backgroundColor = '#ff0000';
+                
+                // Trigger the stop if not already stopped
+                if (!podStop.classList.contains('active')) {
+                    console.log('Automatically triggering pod stop due to critical temperature');
+                    podStop.click(); // This will trigger the existing click event handler
+                } else {
+                    console.log('Pod already stopped');
+                }
+            } else {
+                console.error('Pod stop button not found');
             }
+
         } catch (error) {
             console.error("Failed to activate emergency brakes:", error);
         }
@@ -436,7 +448,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             console.log('POD STOP button clicked');
             if (podStop.classList.contains('active')) {
                 podStop.classList.remove('active');
-                podStop.style.backgroundColor = 'green';
+                podStop.style.backgroundColor = '#FFA500';
                 if (contactor.classList.contains('active')) {
                     contactor.classList.remove('active');
                     contactor.style.backgroundColor = 'green';
@@ -453,8 +465,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     podStartButton.style.backgroundColor = 'red';
                     podStartButton.textContent = 'POD STOP';
                 }
-                await controlRelay('b','OFF'); // Relay d OFF
-                await controlRelay('a','OFF'); // Relay c OFF
+                // await controlRelay('b','OFF'); // Relay d OFF
+                // await controlRelay('a','OFF'); // Relay c OFF
+                await controlRelay('B', 'ON'); // Relay D ON
+                await controlRelay('A', 'ON'); // Relay C ON
             } else {
                 if (contactor.classList.contains('active')) {
                     contactor.classList.remove('active');
@@ -473,10 +487,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     podStartButton.textContent = 'POD STOP';
                 }
                 podStop.classList.add('active');
-                podStop.style.backgroundColor = 'red';
-                podStop.textContent = 'POD STOP';
-                await controlRelay('B', 'ON'); // Relay D ON
-                await controlRelay('A', 'ON'); // Relay C ON
+                podStop.style.backgroundColor = '#FF4500';
+                await controlRelay('b','OFF'); // Relay d OFF
+                await controlRelay('a','OFF'); // Relay c OFF
             }
         });
     } else {
